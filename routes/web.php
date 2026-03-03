@@ -3,18 +3,21 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+ use App\Jobs\SendWelcomeEmail;
+
 Route::get('/', function () {
     return view('welcome');
 });
+ 
+ 
+use App\Jobs\SendRealEmail;
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+Route::get('/send-static-email', function () {
+    SendRealEmail::dispatch(); 
+    return 'Static email job dispatched!';
 });
 
-require __DIR__.'/auth.php';
+Route::get('/send-dynamic-email', function () {
+    SendRealEmail::dispatch('friend@example.com', 'Dynamic User');
+    return 'Dynamic email job dispatched!';
+});
